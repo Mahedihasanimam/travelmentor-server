@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 require('dotenv').config()
 const app=express()
@@ -7,8 +7,6 @@ const port=process.env.PORT || 5000;
 
 app.use(express.json())
 app.use(cors())
-
-
 
 
 const uri = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASS}@cluster0.k4th77t.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -28,17 +26,35 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    app.post('/addtourists',(req,res)=>{
+    const tousristCollection = client.db("touristDB").collection('tourist')
+
+   
+    app.post('/addtourists',async(req,res)=>{
+        const newtourist=req.body
+        const result=await tousristCollection.insertOne(newtourist)
+        res.send(result)
         console.log(req.body)
     })
 
-
+    app.get('/addtourists',async(req,res)=>{
+        const cursor=tousristCollection.find()
+        const result=await cursor.toArray()
+        res.send(result)
+    })
+    
+   
+    app.get('/addtourists/:id',async(req,res)=>{
+        const id=req.params.id     
+        const query={_id: new ObjectId(id)}
+        const result=await tousristCollection.findOne(query)
+        res.send(result)
+    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
