@@ -48,7 +48,7 @@ async function run() {
     })
     
    
-    app.get('/addtourists/:id',async(req,res)=>{
+    app.get('/details/:id',async(req,res)=>{
         const id=req.params.id    
         console.log(id) 
         const query={_id: new ObjectId(id)}
