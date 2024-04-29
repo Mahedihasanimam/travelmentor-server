@@ -4,9 +4,13 @@ const cors = require("cors");
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
-
+const corsConfig = {
+  origin: ["http://localhost:5173"],
+  credentials: true,
+};
+app.use(cors(corsConfig));
 app.use(express.json());
-app.use(cors());
+
 
 const uri = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASS}@cluster0.k4th77t.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -22,9 +26,10 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const tousristCollection = client.db("touristDB").collection("tourist");
+    const countryCollection = client.db("countryDB").collection("country");
 
     app.post("/addtourists", async (req, res) => {
       const newtourist = req.body;
@@ -80,6 +85,13 @@ async function run() {
       const result = await tousristCollection.deleteOne(query);
       res.send(result);
     });
+
+    //country collection
+    app.get('/countrys',async(req,res)=>{
+      const cursor=countryCollection.find()
+      const result=await cursor.toArray()
+      res.send(result)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
