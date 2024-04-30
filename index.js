@@ -5,7 +5,7 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
 const corsConfig = {
-  origin: ["http://localhost:5173"],
+  origin: ["http://localhost:5173","https://travelmentor-3617a.web.app"],
   credentials: true,
 };
 app.use(cors(corsConfig));
@@ -43,6 +43,13 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     });
+
+    app.get("/addtouristsSort", async (req, res) => {
+      const cursor = tousristCollection.find().sort({cost:1})
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     app.get("/addtourists/:email", async (req, res) => {
       const cursor = tousristCollection.find({ email: req.params.email });
       const result = await cursor.toArray();
@@ -91,6 +98,13 @@ async function run() {
       const cursor=countryCollection.find()
       const result=await cursor.toArray()
       res.send(result)
+    })
+    app.get('/countrys/:name',async(req,res)=>{
+     console.log(req.params.name)
+      const cursor=tousristCollection.find({country:req.params.name})
+      const result=await cursor.toArray()
+      res.send(result)
+      
     })
 
     // Send a ping to confirm a successful connection
